@@ -1,0 +1,8 @@
+{
+  "name": "godot-vst3-host",
+  "version": "0.0.1",
+  "dependencies": [
+    "vst3sdk",
+    "libsndfile"
+  ]
+}
