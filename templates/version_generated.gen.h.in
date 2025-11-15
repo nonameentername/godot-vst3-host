@@ -1,0 +1,2 @@
+#define GODOT_VST3_HOST_VERSION "${version}"
+#define GODOT_VST3_HOST_BUILD "${build}"
