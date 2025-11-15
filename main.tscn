@@ -1,0 +1,91 @@
+[gd_scene load_steps=5 format=3 uid="uid://cp3gfghi6epbm"]
+
+[ext_resource type="Script" uid="uid://bfaoxdyuky4rf" path="res://main.gd" id="1_ob6y6"]
+[ext_resource type="PackedScene" path="res://vst3_editor.tscn" id="2_0xm2m"]
+
+[sub_resource type="AudioStreamVst3" id="AudioStreamVst3_ig7tw"]
+
+[sub_resource type="AudioStreamVst3Channel" id="AudioStreamVst3Channel_0xm2m"]
+
+[node name="main" type="Node2D"]
+script = ExtResource("1_ob6y6")
+
+[node name="CheckButton" type="CheckButton" parent="."]
+offset_left = 55.0
+offset_top = 31.0
+offset_right = 131.0
+offset_bottom = 71.0
+
+[node name="CheckButton2" type="CheckButton" parent="."]
+offset_left = 54.0
+offset_top = 77.0
+offset_right = 130.0
+offset_bottom = 117.0
+
+[node name="CheckButton3" type="CheckButton" parent="."]
+offset_left = 56.0
+offset_top = 123.0
+offset_right = 132.0
+offset_bottom = 163.0
+
+[node name="Label" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 45.0
+offset_right = 60.0
+offset_bottom = 68.0
+text = "C4"
+
+[node name="Label2" type="Label" parent="."]
+offset_left = 22.0
+offset_top = 91.0
+offset_right = 62.0
+offset_bottom = 114.0
+text = "E4"
+
+[node name="Label3" type="Label" parent="."]
+offset_left = 21.0
+offset_top = 136.0
+offset_right = 61.0
+offset_bottom = 159.0
+text = "G4"
+
+[node name="Button" type="Button" parent="."]
+visible = false
+offset_left = 600.0
+offset_top = 159.0
+offset_right = 737.0
+offset_bottom = 209.0
+text = "PLAY MIDI"
+
+[node name="VSlider" type="VSlider" parent="."]
+offset_left = 204.0
+offset_top = 34.0
+offset_right = 239.0
+offset_bottom = 160.0
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="OptionButton" type="OptionButton" parent="."]
+offset_left = 17.0
+offset_top = 192.0
+offset_right = 225.0
+offset_bottom = 212.0
+
+[node name="Vst3Player" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamVst3_ig7tw")
+autoplay = true
+
+[node name="Vst3ChannelPlayer" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamVst3Channel_0xm2m")
+volume_db = -80.0
+autoplay = true
+
+[node name="vst3_editor" parent="." instance=ExtResource("2_0xm2m")]
+
+[connection signal="toggled" from="CheckButton" to="." method="_on_check_button_toggled"]
+[connection signal="toggled" from="CheckButton2" to="." method="_on_check_button_2_toggled"]
+[connection signal="toggled" from="CheckButton3" to="." method="_on_check_button_3_toggled"]
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="value_changed" from="VSlider" to="." method="_on_v_slider_value_changed"]
+[connection signal="item_selected" from="OptionButton" to="." method="_on_option_button_item_selected"]

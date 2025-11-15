@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://7cxoemx6im8f"]
+
+[ext_resource type="Script" uid="uid://dxbatwkl3tvba" path="res://vst3_control_dropdown.gd" id="1_f22e8"]
+
+[node name="vst3_control_dropdown" type="HBoxContainer"]
+offset_right = 1.0
+offset_bottom = 23.0
+script = ExtResource("1_f22e8")
+
+[node name="Label" type="Label" parent="."]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="OptionButton" type="OptionButton" parent="."]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[connection signal="item_selected" from="OptionButton" to="." method="_on_option_button_item_selected"]

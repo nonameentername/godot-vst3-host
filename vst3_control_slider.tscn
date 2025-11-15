@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3 uid="uid://yxgkysmpwwst"]
+
+[ext_resource type="Script" uid="uid://dwangh0jype4y" path="res://vst3_control_slider.gd" id="1_rren8"]
+
+[node name="vst3_control_slider" type="HBoxContainer"]
+script = ExtResource("1_rren8")
+
+[node name="Label" type="Label" parent="."]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="HSlider" type="HSlider" parent="."]
+custom_minimum_size = Vector2(200, 32)
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="."]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+
+[connection signal="value_changed" from="HSlider" to="." method="_on_h_slider_value_changed"]
+[connection signal="focus_exited" from="LineEdit" to="." method="_on_line_edit_focus_exited"]
+[connection signal="text_submitted" from="LineEdit" to="." method="_on_line_edit_text_submitted"]
