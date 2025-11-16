@@ -574,7 +574,7 @@ void Vst3Server::finish() {
 
 TypedArray<String> Vst3Server::get_plugins() {
     TypedArray<String> result;
-    std::vector<Vst3PluginInfo> plugins_info = vst3_host->get_plugins_info(false);
+    std::vector<Vst3PluginInfo> plugins_info = vst3_host->get_plugins_info();
 
     for (int i = 0; i < plugins_info.size(); i++) {
         result.push_back(plugins_info[i].uri.c_str());
@@ -585,7 +585,7 @@ TypedArray<String> Vst3Server::get_plugins() {
 
 String Vst3Server::get_plugin_name(String p_uri) {
     // TODO: should this be cached?
-    std::vector<Vst3PluginInfo> plugins_info = vst3_host->get_plugins_info(true);
+    std::vector<Vst3PluginInfo> plugins_info = vst3_host->get_plugins_info();
 
     for (int i = 0; i < plugins_info.size(); i++) {
         if (p_uri == plugins_info[i].uri.c_str()) {

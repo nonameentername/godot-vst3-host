@@ -48,10 +48,14 @@ void Vst3Instance::configure() {
 
     if (!vst3_host->find_plugin(std::string(uri.ascii()))) {
         std::cerr << "Plugin not found: " << uri.ascii() << "\n";
+        unlock();
+        return;
     }
 
     if (!vst3_host->instantiate()) {
         std::cerr << "Failed to instantiate plugin\n";
+        unlock();
+        return;
     }
 
     std::vector<std::pair<std::string, float>> cli_sets;
@@ -63,6 +67,8 @@ void Vst3Instance::configure() {
     int p_frames = 512;
     if (!vst3_host->prepare_ports_and_buffers(p_frames)) {
         std::cerr << "Failed to prepare/connect ports\n";
+        unlock();
+        return;
     }
 
     input_parameters.clear();

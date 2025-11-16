@@ -92,9 +92,6 @@ struct State {
     double sample_rate{48000.0};
     int block_size{512};
 
-    // chosen plugin path + class
-    std::string plugin_path;
-
     VST3::Hosting::ClassInfo chosen_class{};
     bool has_class = false;
 
@@ -160,7 +157,15 @@ private:
     // CLI overrides
     std::vector<std::pair<std::string, float>> cli_sets;
 
+    std::vector<std::string> default_search_paths;
+
     State state;
+
+    // chosen plugin path + class
+    std::string plugin_path;
+
+	std::vector<std::string> get_vst3_recursive(const std::vector<std::string>& paths);
+	void clear_plugin();
 
 public:
     Vst3Host(double p_sr, int p_frames, uint32_t seq_bytes = 4096);
@@ -169,10 +174,10 @@ public:
     Vst3Host(const Vst3Host &) = delete;
     Vst3Host &operator=(const Vst3Host &) = delete;
 
-    std::vector<Vst3PluginInfo> get_plugins_info(bool include_name = false);
+    std::vector<Vst3PluginInfo> get_plugins_info();
     std::string get_plugin_name(std::string);
 
-    bool find_plugin(const std::string &plugin_path);
+    bool find_plugin(const std::string &p_plugin_path);
     bool instantiate();
     void set_cli_parameter_overrides(const std::vector<std::pair<std::string, float>> &name_value_pairs);
 

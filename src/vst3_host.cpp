@@ -7,8 +7,10 @@
 #include <cstdio>
 #include <cstring>
 #include <memory>
+#include <memory_resource>
 #include <string>
 #include <vector>
+#include <filesystem>
 
 // --- VST3 SDK (headers provided by vcpkg's vst3sdk port)
 #include "pluginterfaces/base/funknown.h"
@@ -21,12 +23,9 @@
 #include "pluginterfaces/vst/ivstparameterchanges.h"
 #include "pluginterfaces/vst/ivstunits.h"
 #include "pluginterfaces/vst/vsttypes.h"
-#include "public.sdk/source/vst/hosting/hostclasses.h"
 #include "public.sdk/source/vst/hosting/module.h"
 #include "public.sdk/source/vst/hosting/plugprovider.h"
 #include "public.sdk/source/vst/utility/memoryibstream.h"
-
-static Steinberg::Vst::HostApplication hostApp;
 
 namespace {
 using namespace Steinberg;
@@ -257,48 +256,164 @@ Vst3Host::Vst3Host(double p_sr, int p_frames, uint32_t seq_bytes) {
 
     state.sample_rate = p_sr;
     state.block_size = p_frames;
+
+    default_search_paths = {
+#if defined(_WIN32)
+        "C:/Program Files/Common Files/VST3/"
+#elif defined(__APPLE__)
+            "/Library/Audio/Plug-Ins/VST3/",
+        getenv("HOME") + "/Library/Audio/Plug-Ins/VST3/"
+#else
+            "/usr/lib/vst3/",
+        std::string(getenv("HOME")) + "/.vst3/"
+#endif
+    };
 }
 
 Vst3Host::~Vst3Host() {
-    if (state.processing && state.processor) {
-        state.processor->setProcessing(false);
-    }
-    if (state.active && state.component) {
-        state.component->setActive(false);
-    }
-    if (state.component) {
-        state.component->terminate();
-    }
+	clear_plugin();
 }
 
-std::vector<Vst3PluginInfo> Vst3Host::get_plugins_info(bool include_name) {
+std::vector<std::string> Vst3Host::get_vst3_recursive(const std::vector<std::string>& paths) {
+	std::vector<std::string> results;
+
+	for (const auto& root : paths) {
+		std::filesystem::path p(root);
+
+		if (!std::filesystem::exists(p))
+			continue;
+
+		for (auto& entry : std::filesystem::recursive_directory_iterator(p)) {
+			if (entry.is_directory() && entry.path().extension() == ".vst3") {
+				results.push_back(entry.path().string());
+			}
+		}
+	}
+
+	return results;
+}
+
+std::vector<Vst3PluginInfo> Vst3Host::get_plugins_info() {
     std::vector<Vst3PluginInfo> result;
 
-    if (!state.module) {
-        return result;
-    }
+	std::vector<std::string> plugin_paths = get_vst3_recursive(default_search_paths);
 
-    auto factory = state.module->getFactory();
+	for (auto& plugin_path : plugin_paths) {
+		std::string error;
+		VST3::Hosting::Module::Ptr plugin_module = VST3::Hosting::Module::create(plugin_path, error);
 
-    for (const auto &ci : factory.classInfos()) {
-        if (ci.category() == kVstAudioEffectClass) {
-            Vst3PluginInfo info;
-            info.uri = ci.ID().toString(); // not a real URI; just stable ID string
-            info.name = include_name ? ci.name().c_str() : std::string{};
-            result.push_back(std::move(info));
-        }
-    }
+		if (!plugin_module) {
+			std::fprintf(stderr, "VST3: failed to load module: %s\n%s", plugin_path.c_str(), error.c_str());
+			continue;
+		}
+
+		auto factory = plugin_module->getFactory();
+
+		for (const auto &ci : factory.classInfos()) {
+			if (ci.category() == kVstAudioEffectClass) {
+				Vst3PluginInfo info;
+				//info.uri = ci.ID().toString(); // not a real URI; just stable ID string
+				info.uri = plugin_path; // not a real URI; just stable ID string
+				info.name = ci.name().c_str();
+				result.push_back(std::move(info));
+			}
+		}
+	}
+
     return result;
 }
 
-bool Vst3Host::find_plugin(const std::string &plugin_path) {
-    state.plugin_path = plugin_path;
+void Vst3Host::clear_plugin() {
+    if (state.processor && state.processing) {
+        state.processor->setProcessing(false);
+        state.processing = false;
+    }
+    if (state.component && state.active) {
+        state.component->setActive(false);
+        state.active = false;
+    }
+
+    if (state.component && state.controller) {
+        FUnknownPtr<IConnectionPoint> cp1(state.component);
+        FUnknownPtr<IConnectionPoint> cp2(state.controller);
+        if (cp1 && cp2) {
+            cp1->disconnect(cp2);
+            cp2->disconnect(cp1);
+        }
+    }
+
+    if (state.controller) {
+        state.controller->terminate();
+        state.controller = nullptr;
+    }
+
+    state.processor = nullptr;
+
+    if (state.component) {
+        state.component->terminate();
+        state.component = nullptr;
+    }
+
+    if (state.module) {
+        state.module.reset();
+    }
+
+    audio_in_map.clear();
+    audio_out_map.clear();
+    midi_in_map.clear();
+    midi_out_map.clear();
+
+    midi_input_buffer.clear();
+    midi_output_buffer.clear();
+
+    audio.clear();
+    audio_ptrs.clear();
+    audio_in_ptrs.clear();
+    audio_out_ptrs.clear();
+
+    parameter_input_buffer.clear();
+    parameter_output_buffer.clear();
+    parameter_inputs.clear();
+    parameter_outputs.clear();
+
+    state.has_class = false;
+}
+
+bool Vst3Host::find_plugin(const std::string &p_plugin_path) {
+    plugin_path = p_plugin_path;
 
     const std::string &path = plugin_path;
 
     std::string error;
 
-    state.module = VST3::Hosting::Module::create(state.plugin_path, error);
+    VST3::Hosting::Module::Ptr plugin_module = VST3::Hosting::Module::create(plugin_path, error);
+    if (!plugin_module) {
+        std::fprintf(stderr, "VST3: failed to load module: %s\n%s", plugin_path.c_str(), error.c_str());
+        return false;
+    }
+
+    auto factory = plugin_module->getFactory(); // value, not pointer
+    bool has_class = false;
+
+    for (const auto &ci : factory.classInfos()) {
+        if (ci.category() == kVstAudioEffectClass) {
+            has_class = true;
+            break;
+        }
+    }
+
+    if (!has_class) {
+        std::fprintf(stderr, "VST3: no audio effect class exported by %s\n", plugin_path.c_str());
+        return false;
+    }
+    return true;
+}
+
+bool Vst3Host::instantiate() {
+	clear_plugin();
+
+    std::string error;
+    state.module = VST3::Hosting::Module::create(plugin_path, error);
     if (!state.module) {
         std::fprintf(stderr, "VST3: failed to load module: %s\n%s", plugin_path.c_str(), error.c_str());
         return false;
@@ -320,32 +435,18 @@ bool Vst3Host::find_plugin(const std::string &plugin_path) {
         std::fprintf(stderr, "VST3: no audio effect class exported by %s\n", plugin_path.c_str());
         return false;
     }
-    return true;
-}
 
-bool Vst3Host::instantiate() {
-    if (!state.module || !state.has_class) {
-        return false;
-    }
+	// Factory already returns FUnknownPtr<IComponent>
+	state.component = factory.createInstance<Steinberg::Vst::IComponent>(state.chosen_class.ID());
+	if (!state.component) {
+		std::fprintf(stderr, "VST3: createInstance<IComponent> failed\n");
+		return false;
+	}
 
-    // --- 1) Create component explicitly
-    auto factory = state.module->getFactory();
-    factory.setHostContext(&state.host_app);
-
-    auto compIPtr = factory.createInstance<Steinberg::Vst::IComponent>(state.chosen_class.ID());
-    if (!compIPtr) {
-        std::fprintf(stderr, "VST3: createInstance<IComponent> failed\n");
-        return false;
-    }
-    state.component = Steinberg::FUnknownPtr<Steinberg::Vst::IComponent>(compIPtr.get());
-    if (!state.component) {
-        return false;
-    }
-
-    if (state.component->initialize(&state.host_app) != Steinberg::kResultOk) {
-        std::fprintf(stderr, "VST3: component->initialize failed\n");
-        return false;
-    }
+	if (state.component->initialize(&state.host_app) != Steinberg::kResultOk) {
+		std::fprintf(stderr, "VST3: component->initialize failed\n");
+		return false;
+	}
 
     // --- 2) Grab IAudioProcessor from the same object
     state.processor = Steinberg::FUnknownPtr<Steinberg::Vst::IAudioProcessor>(state.component);
@@ -354,34 +455,25 @@ bool Vst3Host::instantiate() {
         return false;
     }
 
-    // --- 3) Create controller explicitly
-    Steinberg::TUID ctrlCID{};
-    if (state.component->getControllerClassId(ctrlCID) != Steinberg::kResultOk) {
-        std::fprintf(stderr, "VST3: getControllerClassId failed\n");
-        return false;
-    }
-
-    VST3::UID ctrlUID(ctrlCID);
-    auto ctrlIPtr = factory.createInstance<Steinberg::Vst::IEditController>(ctrlUID);
-    if (!ctrlIPtr) {
-        std::fprintf(stderr, "VST3: createInstance<IEditController> failed\n");
-        return false;
-    }
-    state.controller = Steinberg::FUnknownPtr<Steinberg::Vst::IEditController>(ctrlIPtr.get());
-    if (!state.controller) {
-        return false;
-    }
-
-    if (state.controller->initialize(&state.host_app) != Steinberg::kResultOk) {
-        std::fprintf(stderr, "VST3: controller->initialize failed\n");
-        return false;
-    }
+	Steinberg::TUID ctrlCID{};
+	if (state.component->getControllerClassId(ctrlCID) == Steinberg::kResultOk) {
+        VST3::UID ctrlUID(ctrlCID);
+        state.controller = factory.createInstance<Steinberg::Vst::IEditController>(ctrlUID);
+        if (state.controller) {
+            if (state.controller->initialize(&state.host_app) != Steinberg::kResultOk) {
+                std::fprintf(stderr, "VST3: controller->initialize failed\n");
+                return false;
+            }
+        }
+	}
 
     // --- 5) Sync controller with component state (optional but common)
     ResizableMemoryIBStream memory_state;
     if (state.component->getState(&memory_state) == Steinberg::kResultOk) {
         memory_state.seek(0, Steinberg::IBStream::kIBSeekSet, nullptr);
-        state.controller->setComponentState(&memory_state);
+        if (state.controller) {
+            state.controller->setComponentState(&memory_state);
+        }
     }
 
     // Connect component and controller
@@ -432,11 +524,7 @@ bool Vst3Host::instantiate() {
 
     auto *inPtr = inArrs.empty() ? nullptr : inArrs.data();
     auto *outPtr = outArrs.empty() ? nullptr : outArrs.data();
-    if (state.processor->setBusArrangements(inPtr, (Steinberg::int32)inArrs.size(), outPtr,
-                                            (Steinberg::int32)outArrs.size()) != Steinberg::kResultOk) {
-        std::fprintf(stderr, "VST3: setBusArrangements failed\n");
-        return false;
-    }
+    state.processor->setBusArrangements(inPtr, (Steinberg::int32)inArrs.size(), outPtr, (Steinberg::int32)outArrs.size());
 
     // --- 8) Setup processing
     Steinberg::Vst::ProcessSetup setup{};
@@ -478,6 +566,10 @@ bool Vst3Host::instantiate() {
                 continue;
             }
 
+            if (pi.flags & ParameterInfo::kIsHidden) {
+                continue;
+            }
+
             Vst3ParameterBuffer p;
             p.id = pi.id;
             p.value = state.controller->getParamNormalized(pi.id);
@@ -505,12 +597,10 @@ bool Vst3Host::instantiate() {
             parameter.is_program_change = pi.flags & ParameterInfo::kIsProgramChange;
             parameter.is_bypass = pi.flags & ParameterInfo::kIsBypass;
 
-            if (!parameter.is_hidden) {
-                if (pi.flags & ParameterInfo::kIsReadOnly) {
-                    parameter_outputs.push_back(std::move(parameter));
-                } else {
-                    parameter_inputs.push_back(std::move(parameter));
-                }
+            if (pi.flags & ParameterInfo::kIsReadOnly) {
+                parameter_outputs.push_back(std::move(parameter));
+            } else {
+                parameter_inputs.push_back(std::move(parameter));
             }
         }
     }
