@@ -1125,6 +1125,7 @@ float Vst3Host::get_output_parameter_value(int p_index) {
 void Vst3Host::set_input_parameter_value(int p_index, float p_value) {
     if (p_index < parameter_inputs.size()) {
         parameter_input_buffer[p_index].value = p_value;
+        parameter_input_buffer[p_index].dirty = true;
     }
 }
 
