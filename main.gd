@@ -73,7 +73,7 @@ func _on_check_button_3_toggled(toggled_on: bool):
 
 
 func _on_v_slider_value_changed(value: float):
-	vst3.send_input_control_channel(14, value)
+	pass
 
 
 func _on_option_button_item_selected(index: int) -> void:

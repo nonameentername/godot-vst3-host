@@ -119,6 +119,7 @@ elif env["platform"] == "linux":
 
 env.Append(CPPPATH=["src/"])
 sources = Glob("src/*.cpp")
+sources.append("src/thirdparty/vst3/hosting/plugprovider.cpp")
 
 #TODO: handle other operating systems
 sources.append("src/thirdparty/vst3/hosting/module_linux.cpp")

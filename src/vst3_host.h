@@ -101,6 +101,8 @@ struct State {
     Steinberg::FUnknownPtr<Steinberg::Vst::IAudioProcessor> processor;
     Steinberg::FUnknownPtr<Steinberg::Vst::IEditController> controller;
 
+    Steinberg::Vst::PlugProvider *plug_provider = NULL;
+
     Steinberg::Vst::HostApplication host_app;
 
     // arrangements / activation flags

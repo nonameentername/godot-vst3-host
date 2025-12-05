@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://cp3gfghi6epbm"]
 
 [ext_resource type="Script" uid="uid://bfaoxdyuky4rf" path="res://main.gd" id="1_ob6y6"]
-[ext_resource type="PackedScene" path="res://vst3_editor.tscn" id="2_0xm2m"]
+[ext_resource type="PackedScene" uid="uid://spywsk3gepox" path="res://vst3_editor.tscn" id="2_0xm2m"]
 
 [sub_resource type="AudioStreamVst3" id="AudioStreamVst3_ig7tw"]
 

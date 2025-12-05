@@ -67,10 +67,12 @@ set(SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/host/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/vst3_host.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/vst3_circular_buffer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/thirdparty/vst3/hosting/plugprovider.cpp
     ${_VST3_MODULE_FILENAME} 
 )
 set(HEADER
     ${CMAKE_CURRENT_SOURCE_DIR}/src/vst3_host.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/thirdparty/vst3/hosting/threadchecker.h
 )
 
 add_executable(vst3-host ${SOURCE} ${HEADER})

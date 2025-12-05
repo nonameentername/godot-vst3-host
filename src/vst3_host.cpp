@@ -26,6 +26,7 @@
 #include "public.sdk/source/vst/hosting/module.h"
 #include "public.sdk/source/vst/hosting/plugprovider.h"
 #include "public.sdk/source/vst/utility/memoryibstream.h"
+#include "public.sdk/source/vst/hosting/plugprovider.h"
 
 namespace {
 using namespace Steinberg;
@@ -354,6 +355,10 @@ void Vst3Host::clear_plugin() {
         state.component = nullptr;
     }
 
+    if (state.plug_provider) {
+        state.plug_provider->release();
+    }
+
     if (state.module) {
         state.module.reset();
     }
@@ -431,22 +436,15 @@ bool Vst3Host::instantiate() {
         }
     }
 
-    if (!state.has_class) {
-        std::fprintf(stderr, "VST3: no audio effect class exported by %s\n", plugin_path.c_str());
+    state.plug_provider = new PlugProvider (factory, state.chosen_class, true);
+
+    if(!state.plug_provider->initialize()) {
+        std::fprintf(stderr, "VST3: could not initialize plugin exported by %s\n", plugin_path.c_str());
         return false;
     }
 
-	// Factory already returns FUnknownPtr<IComponent>
-	state.component = factory.createInstance<Steinberg::Vst::IComponent>(state.chosen_class.ID());
-	if (!state.component) {
-		std::fprintf(stderr, "VST3: createInstance<IComponent> failed\n");
-		return false;
-	}
-
-	if (state.component->initialize(&state.host_app) != Steinberg::kResultOk) {
-		std::fprintf(stderr, "VST3: component->initialize failed\n");
-		return false;
-	}
+    state.component = state.plug_provider->getComponentPtr();
+    state.controller = state.plug_provider->getControllerPtr();
 
     // --- 2) Grab IAudioProcessor from the same object
     state.processor = Steinberg::FUnknownPtr<Steinberg::Vst::IAudioProcessor>(state.component);
@@ -454,18 +452,6 @@ bool Vst3Host::instantiate() {
         std::fprintf(stderr, "VST3: component has no IAudioProcessor\n");
         return false;
     }
-
-	Steinberg::TUID ctrlCID{};
-	if (state.component->getControllerClassId(ctrlCID) == Steinberg::kResultOk) {
-        VST3::UID ctrlUID(ctrlCID);
-        state.controller = factory.createInstance<Steinberg::Vst::IEditController>(ctrlUID);
-        if (state.controller) {
-            if (state.controller->initialize(&state.host_app) != Steinberg::kResultOk) {
-                std::fprintf(stderr, "VST3: controller->initialize failed\n");
-                return false;
-            }
-        }
-	}
 
     // --- 5) Sync controller with component state (optional but common)
     ResizableMemoryIBStream memory_state;
