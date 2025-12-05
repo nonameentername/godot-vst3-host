@@ -4,6 +4,8 @@ vcpkg_from_github(
     REF ${VERSION}
     SHA512 7dd3483420abd79ee6dcb9db16663fb4e4d448e4243f8b905600ca871593701e66da97badaf3d723aafa1321cf72cbc013066ea8177a9497ab740fd98171efa3
     HEAD_REF master
+    PATCHES
+        vst3sdk_patch.diff
 )
 
 #Submodules
@@ -53,6 +55,8 @@ vcpkg_from_github(
     REF ${VERSION}
     SHA512 248b62ab7fa26e81aa306c38aed657c1ca738caac53d3aa9d1c2076997bad2ccb21abce1f77d6adb4fe7f53c6e51e2757ef2ce4a72db1f68d9c286947efd20c0
     HEAD_REF master
+    PATCHES
+        vst3_public_sdk_patch.diff
 )
 file(REMOVE_RECURSE "${SOURCE_PATH}/public.sdk")
 file(RENAME "${PUBLIC_SDK_SOURCE_PATH}" "${SOURCE_PATH}/public.sdk")
@@ -88,27 +92,27 @@ file(INSTALL "${SOURCE_PATH}/pluginterfaces/gui/" DESTINATION "${CURRENT_PACKAGE
 file(INSTALL "${SOURCE_PATH}/pluginterfaces/vst/" DESTINATION "${CURRENT_PACKAGES_DIR}/include/vst3sdk/pluginterfaces/vst/" FILES_MATCHING PATTERN "*.h")
 file(INSTALL "${SOURCE_PATH}/public.sdk/source/vst/" DESTINATION "${CURRENT_PACKAGES_DIR}/include/vst3sdk/public.sdk//source/vst/" FILES_MATCHING PATTERN "*.h")
 
-if (NOT VCPKG_TARGET_IS_WINDOWS)
-   file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/bin/Release/moduleinfotool" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
-   file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/bin/Release/validator" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
-else()
-   file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/bin/moduleinfotool${VCPKG_TARGET_EXECUTABLE_SUFFIX}" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
-   file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/bin/validator${VCPKG_TARGET_EXECUTABLE_SUFFIX}" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
-endif()
+#if (NOT VCPKG_TARGET_IS_WINDOWS)
+#   file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/bin/Release/moduleinfotool" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
+#   file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/bin/Release/validator" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
+#else()
+#   file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/bin/moduleinfotool${VCPKG_TARGET_EXECUTABLE_SUFFIX}" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
+#   file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/bin/validator${VCPKG_TARGET_EXECUTABLE_SUFFIX}" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
+#endif()
 
-if ("plugin-examples" IN_LIST FEATURES)
-   file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/VST3" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
-endif()
+#if ("plugin-examples" IN_LIST FEATURES)
+#   file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/VST3" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
+#endif()
 
-if ("hosting-examples" IN_LIST FEATURES)
-   if (VCPKG_TARGET_IS_OSX)
-       file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/bin/Release/editorhost.app" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
-   elseif(VCPKG_TARGET_IS_LINUX)
-       file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/bin/Release/editorhost" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
-    else()
-       file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/bin/editorhost${VCPKG_TARGET_EXECUTABLE_SUFFIX}" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
-   endif()
-endif()
+#if ("hosting-examples" IN_LIST FEATURES)
+#   if (VCPKG_TARGET_IS_OSX)
+#       file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/bin/Release/editorhost.app" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
+#   elseif(VCPKG_TARGET_IS_LINUX)
+#       file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/bin/Release/editorhost" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
+#    else()
+#       file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/bin/editorhost${VCPKG_TARGET_EXECUTABLE_SUFFIX}" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
+#   endif()
+#endif()
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE.txt")
 

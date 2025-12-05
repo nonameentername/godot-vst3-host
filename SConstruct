@@ -90,7 +90,21 @@ env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 
 if env["platform"] == "windows":
     env.Append(CPPFLAGS=["-DMINGW"])
-    env.Append(LIBS=[])
+    env.Append(LINKFLAGS=["-Wl,--start-group"])
+    env.Append(LIBS=["sdk_hosting", "sdk", "sdk_common", "pluginterfaces", "base"])
+    env.Append(LINKFLAGS=["-Wl,--end-group"])
+    env.Append(LIBS=["uuid", "ole32"])
+
+    if env["dev_build"]:
+        env.Append(LIBPATH=["addons/vst3-host/bin/windows/debug/vcpkg_installed/x64-mingw-static/debug/lib",
+                            "addons/vst3-host/bin/windows/debug/vcpkg_installed/x64-mingw-static/debug/lib/vst3sdk/Debug"])
+        env.Append(CPPPATH=["addons/vst3-host/bin/windows/debug/vcpkg_installed/x64-mingw-static/include",
+                            "addons/vst3-host/bin/windows/debug/vcpkg_installed/x64-mingw-static/include/vst3sdk"])
+    else:
+        env.Append(LIBPATH=["addons/vst3-host/bin/windows/release/vcpkg_installed/x64-mingw-static/lib",
+                            "addons/vst3-host/bin/windows/release/vcpkg_installed/x64-mingw-static/lib/vst3sdk/Release"])
+        env.Append(CPPPATH=["addons/vst3-host/bin/windows/release/vcpkg_installed/x64-mingw-static/include",
+                            "addons/vst3-host/bin/windows/release/vcpkg_installed/x64-mingw-static/include/vst3sdk"])
 elif env["platform"] == "web":
     if env["dev_build"]:
         env.Append(CPPFLAGS=["-g"])
@@ -122,7 +136,10 @@ sources = Glob("src/*.cpp")
 sources.append("src/thirdparty/vst3/hosting/plugprovider.cpp")
 
 #TODO: handle other operating systems
-sources.append("src/thirdparty/vst3/hosting/module_linux.cpp")
+if env["platform"] == "windows":
+    sources.append("src/thirdparty/vst3/hosting/module_win32.cpp")
+elif env["platform"] == "linux":
+    sources.append("src/thirdparty/vst3/hosting/module_linux.cpp")
 
 if env.get("asan", False):
     print("SCons: Building with AddressSanitizer instrumentation")

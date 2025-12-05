@@ -639,8 +639,8 @@ Optional<std::string> Module::getModuleInfoPath (const std::string& modulePath)
 //------------------------------------------------------------------------
 bool Module::validateBundleStructure (const std::string& modulePath, std::string& errorDescription)
 {
-	try
-	{
+//	try
+//	{
 		auto path = getContentsDirectoryFromModuleExecutablePath (modulePath);
 		if (!path)
 		{
@@ -671,12 +671,12 @@ bool Module::validateBundleStructure (const std::string& modulePath, std::string
 			return false;
 		}
 		return true;
-	}
-	catch (const std::exception& exc)
-	{
-		errorDescription = exc.what ();
-		return false;
-	}
+//	}
+//	catch (const std::exception& exc)
+//	{
+//		errorDescription = exc.what ();
+//		return false;
+//	}
 }
 
 //------------------------------------------------------------------------
