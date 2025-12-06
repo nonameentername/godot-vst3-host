@@ -227,3 +227,36 @@ jobs:
         with:
           path: addons/vst3-host/bin
           key: macos-artifacts-${{ matrix.environment }}-${{github.run_id}}
+
+  verify-linux-build:
+    name: Verify Linux/Ubuntu build
+    runs-on: ubuntu-latest
+    needs: linux-build
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+          submodules: recursive
+
+      - name: Restore cached Linux artifacts
+        uses: actions/cache/restore@v4
+        with:
+          path: addons/vst3-host/bin
+          key: linux-artifacts-${{github.run_id}}
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.5.0
+          use-dotnet: false
+          include-templates: false
+
+      - name: Godot import
+        continue-on-error: true
+        run: |
+          godot --headless --import
+
+      - name: Verify godot-vst3-host
+        run: |
+          godot --headless -s vst3host_run_scene.gd --quit-after 300 2> /dev/null | grep 'it works!'
