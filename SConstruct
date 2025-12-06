@@ -90,9 +90,7 @@ env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 
 if env["platform"] == "windows":
     env.Append(CPPFLAGS=["-DMINGW"])
-    env.Append(LINKFLAGS=["-Wl,--start-group"])
-    env.Append(LIBS=["sdk_hosting", "sdk", "sdk_common", "pluginterfaces", "base"])
-    env.Append(LINKFLAGS=["-Wl,--end-group"])
+    env.Append(LIBS=["sdk_hosting", "sdk", "sdk_common", "base", "pluginterfaces"])
     env.Append(LIBS=["uuid", "ole32"])
 
     if env["dev_build"]:
@@ -110,11 +108,25 @@ elif env["platform"] == "web":
         env.Append(CPPFLAGS=["-g"])
         env.Append(LINKFLAGS=["-g", "-s", "ERROR_ON_UNDEFINED_SYMBOLS=1"])
 elif env["platform"] == "macos":
-    env.Append(LIBS=[])
+    env.Append(LINKFLAGS=["-framework", "CoreAudio",
+                          "-framework", "AudioToolbox",
+                          "-framework", "CoreFoundation",
+                          "-framework", "Foundation"
+                          ])
+    env.Append(LIBS=["sdk_hosting", "sdk", "sdk_common", "base", "pluginterfaces"])
+
+    if env["dev_build"]:
+        env.Append(LIBPATH=["addons/vst3-host/bin/osxcross/debug/vcpkg_installed/universal-osxcross/debug/lib",
+                            "addons/vst3-host/bin/osxcross/debug/vcpkg_installed/universal-osxcross/debug/lib/vst3sdk/Debug"])
+        env.Append(CPPPATH=["addons/vst3-host/bin/osxcross/debug/vcpkg_installed/universal-osxcross/include",
+                            "addons/vst3-host/bin/osxcross/debug/vcpkg_installed/universal-osxcross/include/vst3sdk"])
+    else:
+        env.Append(LIBPATH=["addons/vst3-host/bin/osxcross/release/vcpkg_installed/universal-osxcross/lib",
+                            "addons/vst3-host/bin/osxcross/release/vcpkg_installed/universal-osxcross/lib/vst3sdk/Release"])
+        env.Append(CPPPATH=["addons/vst3-host/bin/osxcross/release/vcpkg_installed/universal-osxcross/include",
+                            "addons/vst3-host/bin/osxcross/release/vcpkg_installed/universal-osxcross/include/vst3sdk"])
 elif env["platform"] == "linux":
-    env.Append(LINKFLAGS=["-Wl,--start-group"])
-    env.Append(LIBS=["sdk_hosting", "sdk", "sdk_common", "pluginterfaces", "base"])
-    env.Append(LINKFLAGS=["-Wl,--end-group"])
+    env.Append(LIBS=["sdk_hosting", "sdk", "sdk_common", "base", "pluginterfaces"])
 
     if env["dev_build"]:
         env.Append(LIBPATH=["addons/vst3-host/bin/linux/debug/vcpkg_installed/x64-linux/debug/lib",
@@ -140,6 +152,9 @@ if env["platform"] == "windows":
     sources.append("src/thirdparty/vst3/hosting/module_win32.cpp")
 elif env["platform"] == "linux":
     sources.append("src/thirdparty/vst3/hosting/module_linux.cpp")
+elif env["platform"] == "macos":
+    sources.append("src/thirdparty/vst3/hosting/module_mac.mm")
+    sources.append("src/thirdparty/vst3/hosting/threadchecker_mac.mm")
 
 if env.get("asan", False):
     print("SCons: Building with AddressSanitizer instrumentation")

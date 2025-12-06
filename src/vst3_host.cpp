@@ -28,6 +28,10 @@
 #include "public.sdk/source/vst/utility/memoryibstream.h"
 #include "public.sdk/source/vst/hosting/plugprovider.h"
 
+#if defined(__APPLE__)
+    void* moduleHandle = nullptr; 
+#endif
+
 namespace {
 using namespace Steinberg;
 using namespace Steinberg::Vst;
@@ -263,7 +267,7 @@ Vst3Host::Vst3Host(double p_sr, int p_frames, uint32_t seq_bytes) {
         "C:/Program Files/Common Files/VST3/"
 #elif defined(__APPLE__)
             "/Library/Audio/Plug-Ins/VST3/",
-        getenv("HOME") + "/Library/Audio/Plug-Ins/VST3/"
+        std::string(getenv("HOME")) + "/Library/Audio/Plug-Ins/VST3/"
 #else
             "/usr/lib/vst3/",
         std::string(getenv("HOME")) + "/.vst3/"

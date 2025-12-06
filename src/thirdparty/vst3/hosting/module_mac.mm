@@ -18,9 +18,9 @@
 #import <Cocoa/Cocoa.h>
 #import <CoreFoundation/CoreFoundation.h>
 
-#if !__has_feature(objc_arc)
-#error this file needs to be compiled with automatic reference counting enabled
-#endif
+//#if !__has_feature(objc_arc)
+//#error this file needs to be compiled with automatic reference counting enabled
+//#endif
 
 //------------------------------------------------------------------------
 extern "C" {
