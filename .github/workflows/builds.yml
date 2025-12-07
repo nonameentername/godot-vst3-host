@@ -299,3 +299,40 @@ jobs:
       - name: Verify godot-vst3-host
         run: |
           godot --headless -s vst3host_run_scene.gd --quit-after 300 2> /dev/null | grep 'it works!'
+
+  verify-windows-build:
+    name: Verify Windows build
+    runs-on: windows-latest
+    needs: windows-build
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+          submodules: recursive
+
+      - name: Restore cached Windows artifacts
+        uses: actions/cache/restore@v4
+        with:
+          path: addons/vst3-host/bin
+          key: windows-artifacts-${{github.run_id}}
+          enableCrossOsArchive: true
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.5.0
+          use-dotnet: false
+          include-templates: false
+
+      - name: Godot import
+        continue-on-error: true
+        run: |
+          godot --headless --import
+
+      - name: Verify godot-vst3-host
+        run: |
+          godot --headless -s vst3host_run_scene.gd --quit-after 300 2> NUL | grep 'it works!'
