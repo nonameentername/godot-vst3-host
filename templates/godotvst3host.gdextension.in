@@ -13,3 +13,5 @@ reloadable = true
 
 linux.debug.x86_64 = "res://addons/vst3-host/bin/linux/libvst3hostgodot.linux.template_debug.dev.x86_64.so"
 linux.release.x86_64 = "res://addons/vst3-host/bin/linux/libvst3hostgodot.linux.template_release.x86_64.so"
+macos.debug = "res://addons/vst3-host/bin/macos/macos.framework/libvst3hostgodot.macos.template_debug"
+macos.release = "res://addons/vst3-host/bin/macos/macos.framework/libvst3hostgodot.macos.template_release"
