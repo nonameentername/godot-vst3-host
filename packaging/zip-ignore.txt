@@ -1,0 +1,9 @@
+addons/vst3-host/bin/osxcross/*
+addons/vst3-host/bin/osxcross-arm64/*
+addons/vst3-host/bin/osxcross-x86_64/*
+addons/vst3-host/bin/linux/debug/*
+addons/vst3-host/bin/linux/release/*
+addons/vst3-host/bin/windows/debug/*
+addons/vst3-host/bin/windows/release/*
+addons/vst3-host/bin/macos/debug/*
+addons/vst3-host/bin/macos/release/*

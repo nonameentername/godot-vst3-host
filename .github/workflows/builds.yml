@@ -336,3 +336,66 @@ jobs:
       - name: Verify godot-vst3-host
         run: |
           godot --headless -s vst3host_run_scene.gd --quit-after 300 2> NUL | grep 'it works!'
+
+  publish_artifacts:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    name: Publish Artifacts
+    runs-on: ubuntu-latest
+    needs: [verify-linux-build, verify-windows-build, verify-macos-build]
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+          submodules: recursive
+
+      - name: Restore cached Linux artifacts
+        uses: actions/cache/restore@v4
+        with:
+          path: addons/vst3-host/bin
+          key: linux-artifacts-${{github.run_id}}
+
+      - name: Restore cached Windows artifacts
+        uses: actions/cache/restore@v4
+        with:
+          path: addons/vst3-host/bin
+          key: windows-artifacts-${{github.run_id}}
+          enableCrossOsArchive: true
+
+      - name: Restore cached MacOS artifacts (debug)
+        uses: actions/cache/restore@v4
+        with:
+          path: addons/vst3-host/bin
+          key: macos-artifacts-debug-${{github.run_id}}
+
+      - name: Restore cached MacOS artifacts (release)
+        uses: actions/cache/restore@v4
+        with:
+          path: addons/vst3-host/bin
+          key: macos-artifacts-release-${{github.run_id}}
+
+      - name: Update minor version
+        id: tag
+        uses: anothrNick/github-tag-action@1.36.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          DRY_RUN: true
+          RELEASE_BRANCHES: none
+
+      - name: Zip godot-vst3-host artifact
+        run: zip -r godot-vst3host_${{ env.TAG_VERSION }}.zip ./addons/vst3-host
+        env:
+          TAG_VERSION: ${{ steps.tag.outputs.new_tag }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ github.token }}
+          tag_name: ${{ env.TAG_VERSION }}
+          generate_release_notes: true
+          make_latest: true
+          files: |
+            godot-vst3host_${{ env.TAG_VERSION }}.zip
+        env:
+          TAG_VERSION: ${{ steps.tag.outputs.new_tag }}

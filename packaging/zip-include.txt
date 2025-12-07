@@ -1,0 +1,1 @@
+addons/vst3-host/*
