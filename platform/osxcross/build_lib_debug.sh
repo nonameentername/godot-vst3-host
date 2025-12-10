@@ -19,3 +19,5 @@ export OSXCROSS_ROOT=$OSXCROSS_BASE_DIR
 
 cd $dir
 scons platform=macos target=template_debug dev_build=yes debug_symbols=yes osxcross_sdk=$OSXCROSS_TARGET
+
+x86_64-apple-${OSXCROSS_TARGET}-dsymutil addons/vst3-host/bin/macos/macos.framework/libvst3hostgodot.macos.template_debug
