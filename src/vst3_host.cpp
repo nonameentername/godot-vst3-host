@@ -289,7 +289,7 @@ std::vector<std::string> Vst3Host::get_vst3_recursive(const std::vector<std::str
 			continue;
 
 		for (auto& entry : std::filesystem::recursive_directory_iterator(p)) {
-			if (entry.is_directory() && entry.path().extension() == ".vst3") {
+			if (entry.path().extension() == ".vst3") {
 				results.push_back(entry.path().string());
 			}
 		}
