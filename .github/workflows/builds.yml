@@ -384,7 +384,7 @@ jobs:
           RELEASE_BRANCHES: none
 
       - name: Zip godot-vst3-host artifact
-        run: zip -r godot-vst3host_${{ env.TAG_VERSION }}.zip ./addons/vst3-host
+        run: ./scripts/create_zip.sh godot-vst3host_${{ env.TAG_VERSION }}.zip
         env:
           TAG_VERSION: ${{ steps.tag.outputs.new_tag }}
 
