@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://cp3gfghi6epbm"]
+[gd_scene format=3 uid="uid://cp3gfghi6epbm"]
 
 [ext_resource type="Script" uid="uid://bfaoxdyuky4rf" path="res://main.gd" id="1_ob6y6"]
 [ext_resource type="PackedScene" uid="uid://spywsk3gepox" path="res://vst3_editor.tscn" id="2_0xm2m"]
@@ -7,49 +7,49 @@
 
 [sub_resource type="AudioStreamVst3Channel" id="AudioStreamVst3Channel_0xm2m"]
 
-[node name="main" type="Node2D"]
+[node name="main" type="Node2D" unique_id=1314112556]
 script = ExtResource("1_ob6y6")
 
-[node name="CheckButton" type="CheckButton" parent="."]
+[node name="CheckButton" type="CheckButton" parent="." unique_id=1372219221]
 offset_left = 55.0
 offset_top = 31.0
 offset_right = 131.0
 offset_bottom = 71.0
 
-[node name="CheckButton2" type="CheckButton" parent="."]
+[node name="CheckButton2" type="CheckButton" parent="." unique_id=1653756111]
 offset_left = 54.0
 offset_top = 77.0
 offset_right = 130.0
 offset_bottom = 117.0
 
-[node name="CheckButton3" type="CheckButton" parent="."]
+[node name="CheckButton3" type="CheckButton" parent="." unique_id=1936406750]
 offset_left = 56.0
 offset_top = 123.0
 offset_right = 132.0
 offset_bottom = 163.0
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="." unique_id=747541526]
 offset_left = 20.0
 offset_top = 45.0
 offset_right = 60.0
 offset_bottom = 68.0
 text = "C4"
 
-[node name="Label2" type="Label" parent="."]
+[node name="Label2" type="Label" parent="." unique_id=394844593]
 offset_left = 22.0
 offset_top = 91.0
 offset_right = 62.0
 offset_bottom = 114.0
 text = "E4"
 
-[node name="Label3" type="Label" parent="."]
+[node name="Label3" type="Label" parent="." unique_id=1466928657]
 offset_left = 21.0
 offset_top = 136.0
 offset_right = 61.0
 offset_bottom = 159.0
 text = "G4"
 
-[node name="Button" type="Button" parent="."]
+[node name="Button" type="Button" parent="." unique_id=472581524]
 visible = false
 offset_left = 600.0
 offset_top = 159.0
@@ -57,7 +57,7 @@ offset_right = 737.0
 offset_bottom = 209.0
 text = "PLAY MIDI"
 
-[node name="VSlider" type="VSlider" parent="."]
+[node name="VSlider" type="VSlider" parent="." unique_id=629020320]
 offset_left = 204.0
 offset_top = 34.0
 offset_right = 239.0
@@ -66,22 +66,22 @@ max_value = 1.0
 step = 0.01
 value = 1.0
 
-[node name="OptionButton" type="OptionButton" parent="."]
+[node name="OptionButton" type="OptionButton" parent="." unique_id=1866545941]
 offset_left = 17.0
 offset_top = 192.0
 offset_right = 225.0
 offset_bottom = 212.0
 
-[node name="Vst3Player" type="AudioStreamPlayer" parent="."]
+[node name="Vst3Player" type="AudioStreamPlayer" parent="." unique_id=1287751154]
 stream = SubResource("AudioStreamVst3_ig7tw")
 autoplay = true
 
-[node name="Vst3ChannelPlayer" type="AudioStreamPlayer" parent="."]
+[node name="Vst3ChannelPlayer" type="AudioStreamPlayer" parent="." unique_id=987632797]
 stream = SubResource("AudioStreamVst3Channel_0xm2m")
 volume_db = -80.0
 autoplay = true
 
-[node name="vst3_editor" parent="." instance=ExtResource("2_0xm2m")]
+[node name="vst3_editor" parent="." unique_id=675548604 instance=ExtResource("2_0xm2m")]
 
 [connection signal="toggled" from="CheckButton" to="." method="_on_check_button_toggled"]
 [connection signal="toggled" from="CheckButton2" to="." method="_on_check_button_2_toggled"]
