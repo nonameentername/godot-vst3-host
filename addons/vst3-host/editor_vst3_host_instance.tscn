@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://bnpe76igc2e47"]
+[gd_scene format=3 uid="uid://bnpe76igc2e47"]
 
 [ext_resource type="Script" uid="uid://ckdouo5nr7ffk" path="res://addons/vst3-host/editor_vst3_host_instance.gd" id="1_04gtk"]
 
@@ -26,7 +26,7 @@ corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 corner_detail = 5
 
-[node name="Control" type="PanelContainer"]
+[node name="Control" type="PanelContainer" unique_id=2070205375]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -37,22 +37,22 @@ tooltip_text = "Drag & drop to rearrange."
 focus_mode = 1
 script = ExtResource("1_04gtk")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=418408195]
 layout_mode = 2
 tooltip_text = "Drag & drop to rearrange."
 
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer"]
+[node name="LineEdit" type="LineEdit" parent="VBoxContainer" unique_id=396969865]
 layout_mode = 2
 text = "Main"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=133458846]
 layout_mode = 2
 
-[node name="LeftHBox" type="HBoxContainer" parent="VBoxContainer/HBoxContainer"]
+[node name="LeftHBox" type="HBoxContainer" parent="VBoxContainer/HBoxContainer" unique_id=1737615048]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="solo" type="Button" parent="VBoxContainer/HBoxContainer/LeftHBox"]
+[node name="solo" type="Button" parent="VBoxContainer/HBoxContainer/LeftHBox" unique_id=636580408]
 layout_mode = 2
 tooltip_text = "Solo"
 focus_mode = 0
@@ -61,7 +61,7 @@ toggle_mode = true
 icon = SubResource("ImageTexture_qpgwm")
 flat = true
 
-[node name="mute" type="Button" parent="VBoxContainer/HBoxContainer/LeftHBox"]
+[node name="mute" type="Button" parent="VBoxContainer/HBoxContainer/LeftHBox" unique_id=612724522]
 layout_mode = 2
 tooltip_text = "Mute"
 focus_mode = 0
@@ -70,7 +70,7 @@ toggle_mode = true
 icon = SubResource("ImageTexture_qpgwm")
 flat = true
 
-[node name="bypass" type="Button" parent="VBoxContainer/HBoxContainer/LeftHBox"]
+[node name="bypass" type="Button" parent="VBoxContainer/HBoxContainer/LeftHBox" unique_id=879407041]
 layout_mode = 2
 tooltip_text = "Bypass"
 focus_mode = 0
@@ -79,10 +79,10 @@ toggle_mode = true
 icon = SubResource("ImageTexture_qpgwm")
 flat = true
 
-[node name="RightHBox" type="HBoxContainer" parent="VBoxContainer/HBoxContainer"]
+[node name="RightHBox" type="HBoxContainer" parent="VBoxContainer/HBoxContainer" unique_id=1487579123]
 layout_mode = 2
 
-[node name="options" type="MenuButton" parent="VBoxContainer/HBoxContainer/RightHBox" node_paths=PackedStringArray("shortcut_context")]
+[node name="options" type="MenuButton" parent="VBoxContainer/HBoxContainer/RightHBox" unique_id=2051088581 node_paths=PackedStringArray("shortcut_context")]
 layout_mode = 2
 size_flags_horizontal = 8
 tooltip_text = "Vst3 Options"
@@ -96,25 +96,25 @@ popup/item_1/id = 1
 popup/item_2/text = "Reset volume"
 popup/item_2/id = 2
 
-[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer" unique_id=586595799]
 layout_mode = 2
 mouse_filter = 1
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer" unique_id=903115711]
 layout_mode = 2
 
-[node name="Channels" type="BoxContainer" parent="VBoxContainer/HBoxContainer2"]
+[node name="Channels" type="BoxContainer" parent="VBoxContainer/HBoxContainer2" unique_id=1674789046]
 custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
 
-[node name="Slider" type="VSlider" parent="VBoxContainer/HBoxContainer2/Channels"]
+[node name="Slider" type="VSlider" parent="VBoxContainer/HBoxContainer2/Channels" unique_id=1758394581]
 layout_mode = 2
 tooltip_text = "-12.0 dB"
 max_value = 1.0
 step = 0.0
 value = 0.3563404
 
-[node name="AudioValuePreview" type="Panel" parent="VBoxContainer/HBoxContainer2/Channels/Slider"]
+[node name="AudioValuePreview" type="Panel" parent="VBoxContainer/HBoxContainer2/Channels/Slider" unique_id=1310659733]
 visible = false
 top_level = true
 layout_mode = 0
@@ -125,7 +125,7 @@ offset_bottom = 11.712681
 mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBoxFlat_558k6")
 
-[node name="AudioPreviewHBox" type="HBoxContainer" parent="VBoxContainer/HBoxContainer2/Channels/Slider/AudioValuePreview"]
+[node name="AudioPreviewHBox" type="HBoxContainer" parent="VBoxContainer/HBoxContainer2/Channels/Slider/AudioValuePreview" unique_id=69059749]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -133,7 +133,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="AudioPreviewLabel" type="Label" parent="VBoxContainer/HBoxContainer2/Channels/Slider/AudioValuePreview/AudioPreviewHBox"]
+[node name="AudioPreviewLabel" type="Label" parent="VBoxContainer/HBoxContainer2/Channels/Slider/AudioValuePreview/AudioPreviewHBox" unique_id=716865931]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
@@ -141,33 +141,33 @@ theme_override_colors/font_color = Color(0.875, 0.875, 0.875, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
 text = "-12.0 dB"
 
-[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer" unique_id=324923037]
 layout_mode = 2
 mouse_filter = 1
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer" unique_id=705225710]
 layout_mode = 2
 
-[node name="LeftHBox" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3"]
+[node name="LeftHBox" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3" unique_id=328859408]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Label" type="LineEdit" parent="VBoxContainer/HBoxContainer3/LeftHBox"]
+[node name="Label" type="LineEdit" parent="VBoxContainer/HBoxContainer3/LeftHBox" unique_id=1778622610]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 text = "/usr/lib/vst3/vitalium.vst3"
 editable = false
 
-[node name="PluginOption" type="OptionButton" parent="VBoxContainer/HBoxContainer3/LeftHBox"]
+[node name="PluginOption" type="OptionButton" parent="VBoxContainer/HBoxContainer3/LeftHBox" unique_id=1505726776]
 custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 fit_to_longest_item = false
 
-[node name="RightHBox" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3"]
+[node name="RightHBox" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3" unique_id=1162460603]
 layout_mode = 2
 
-[node name="Tree" type="Tree" parent="VBoxContainer"]
+[node name="Tree" type="Tree" parent="VBoxContainer" unique_id=1940802885]
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 1
@@ -176,7 +176,7 @@ allow_rmb_select = true
 hide_folding = true
 hide_root = true
 
-[node name="Timer" type="Timer" parent="."]
+[node name="Timer" type="Timer" parent="." unique_id=1197879257]
 wait_time = 0.8
 one_shot = true
 

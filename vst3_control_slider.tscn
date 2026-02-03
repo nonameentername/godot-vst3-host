@@ -1,20 +1,20 @@
-[gd_scene load_steps=2 format=3 uid="uid://yxgkysmpwwst"]
+[gd_scene format=3 uid="uid://yxgkysmpwwst"]
 
 [ext_resource type="Script" uid="uid://dwangh0jype4y" path="res://vst3_control_slider.gd" id="1_rren8"]
 
-[node name="vst3_control_slider" type="HBoxContainer"]
+[node name="vst3_control_slider" type="HBoxContainer" unique_id=1131109514]
 script = ExtResource("1_rren8")
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="." unique_id=1135161876]
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 horizontal_alignment = 2
 
-[node name="HSlider" type="HSlider" parent="."]
+[node name="HSlider" type="HSlider" parent="." unique_id=380762711]
 custom_minimum_size = Vector2(200, 32)
 layout_mode = 2
 
-[node name="LineEdit" type="LineEdit" parent="."]
+[node name="LineEdit" type="LineEdit" parent="." unique_id=1595529674]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 
