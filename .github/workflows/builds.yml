@@ -67,11 +67,11 @@ jobs:
           BUILD_SHA: ${{ steps.short-sha.outputs.sha }}
           TAG_VERSION: ${{ steps.tag.outputs.new_tag }}
 
-      - name: Create cache for build
-        uses: actions/cache@v4
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
         with:
+          name: linux-artifacts
           path: addons/vst3-host/bin
-          key: linux-artifacts-${{github.run_id}}
 
   windows-build:
     name: Windows build
@@ -124,12 +124,11 @@ jobs:
           BUILD_SHA: ${{ steps.short-sha.outputs.sha }}
           TAG_VERSION: ${{ steps.tag.outputs.new_tag }}
 
-      - name: Create cache for build
-        uses: actions/cache@v4
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
         with:
+          name: windows-artifacts
           path: addons/vst3-host/bin
-          key: windows-artifacts-${{github.run_id}}
-          enableCrossOsArchive: true
   
   macos-build-deps:
     name: MacOS build deps
@@ -158,11 +157,11 @@ jobs:
           run: |
             ARCH=${{ matrix.arch }} ./platform/osxcross/build_deps_${{ matrix.environment }}.sh
 
-      - name: Create cache for build
-        uses: actions/cache@v4
+      - name: Upload MacOS deps artifacts
+        uses: actions/upload-artifact@v4
         with:
+          name: macos-deps-artifacts-${{ matrix.environment }}-${{ matrix.arch }}
           path: addons/vst3-host/bin
-          key: macos-deps-artifacts-${{ matrix.environment }}-${{ matrix.arch }}-${{github.run_id}}
 
   macos-build:
     name: MacOS build
@@ -197,17 +196,17 @@ jobs:
         with:
           length: 6
 
-      - name: Restore cached MacOS artifacts (arm64)
-        uses: actions/cache/restore@v4
+      - name: Download MacOS deps artifacts (arm64)
+        uses: actions/download-artifact@v4
         with:
+          name: macos-deps-artifacts-${{ matrix.environment }}-arm64
           path: addons/vst3-host/bin
-          key: macos-deps-artifacts-${{ matrix.environment }}-arm64-${{github.run_id}}
 
-      - name: Restore cached MacOS artifacts (x86_64)
-        uses: actions/cache/restore@v4
+      - name: Download MacOS deps artifacts (x86_64)
+        uses: actions/download-artifact@v4
         with:
+          name: macos-deps-artifacts-${{ matrix.environment }}-x86_64
           path: addons/vst3-host/bin
-          key: macos-deps-artifacts-${{ matrix.environment }}-x86_64-${{github.run_id}}
 
       - name: Build godot-vst3-host
         uses: nonameentername/docker-run-action@v3
@@ -222,11 +221,11 @@ jobs:
           BUILD_SHA: ${{ steps.short-sha.outputs.sha }}
           TAG_VERSION: ${{ steps.tag.outputs.new_tag }}
 
-      - name: Create cache for build
-        uses: actions/cache@v4
+      - name: Upload MacOS artifacts
+        uses: actions/upload-artifact@v4
         with:
+          name: macos-artifacts-${{ matrix.environment }}
           path: addons/vst3-host/bin
-          key: macos-artifacts-${{ matrix.environment }}-${{github.run_id}}
 
   verify-linux-build:
     name: Verify Linux/Ubuntu build
@@ -239,11 +238,11 @@ jobs:
           fetch-depth: 1
           submodules: recursive
 
-      - name: Restore cached Linux artifacts
-        uses: actions/cache/restore@v4
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v4
         with:
+          name: linux-artifacts
           path: addons/vst3-host/bin
-          key: linux-artifacts-${{github.run_id}}
 
       - name: Setup Godot
         uses: chickensoft-games/setup-godot@v2
@@ -272,17 +271,17 @@ jobs:
           fetch-depth: 1
           submodules: recursive
 
-      - name: Restore cached MacOS artifacts (debug)
-        uses: actions/cache/restore@v4
+      - name: Download MacOS artifacts (debug)
+        uses: actions/download-artifact@v4
         with:
+          name: macos-artifacts-debug
           path: addons/vst3-host/bin
-          key: macos-artifacts-debug-${{github.run_id}}
 
-      - name: Restore cached MacOS artifacts (release)
-        uses: actions/cache/restore@v4
+      - name: Download MacOS artifacts (release)
+        uses: actions/download-artifact@v4
         with:
+          name: macos-artifacts-release
           path: addons/vst3-host/bin
-          key: macos-artifacts-release-${{github.run_id}}
 
       - name: Setup Godot
         uses: chickensoft-games/setup-godot@v2
@@ -314,12 +313,11 @@ jobs:
           fetch-depth: 1
           submodules: recursive
 
-      - name: Restore cached Windows artifacts
-        uses: actions/cache/restore@v4
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
         with:
+          name: windows-artifacts
           path: addons/vst3-host/bin
-          key: windows-artifacts-${{github.run_id}}
-          enableCrossOsArchive: true
 
       - name: Setup Godot
         uses: chickensoft-games/setup-godot@v2
@@ -349,30 +347,30 @@ jobs:
           fetch-depth: 1
           submodules: recursive
 
-      - name: Restore cached Linux artifacts
-        uses: actions/cache/restore@v4
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v4
         with:
+          name: linux-artifacts
           path: addons/vst3-host/bin
-          key: linux-artifacts-${{github.run_id}}
 
-      - name: Restore cached Windows artifacts
-        uses: actions/cache/restore@v4
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
         with:
+          name: windows-artifacts
           path: addons/vst3-host/bin
-          key: windows-artifacts-${{github.run_id}}
-          enableCrossOsArchive: true
 
-      - name: Restore cached MacOS artifacts (debug)
-        uses: actions/cache/restore@v4
-        with:
-          path: addons/vst3-host/bin
-          key: macos-artifacts-debug-${{github.run_id}}
 
-      - name: Restore cached MacOS artifacts (release)
-        uses: actions/cache/restore@v4
+      - name: Download MacOS artifacts (debug)
+        uses: actions/download-artifact@v4
         with:
+          name: macos-artifacts-debug
           path: addons/vst3-host/bin
-          key: macos-artifacts-release-${{github.run_id}}
+
+      - name: Download MacOS artifacts (release)
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-artifacts-release
+          path: addons/vst3-host/bin
 
       - name: Update minor version
         id: tag
